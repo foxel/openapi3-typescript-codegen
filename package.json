@@ -1,0 +1,25 @@
+{
+  "name": "openapi3-typescript-codegen",
+  "version": "0.0.1",
+  "description": "typescript codegen for OpenAPI 3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/foxel/openapi3-typescript-codegen.git"
+  },
+  "author": "Andrey F. Kupreychik <foxel@quickfox.ru> (https://github.com/foxel)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/foxel/openapi3-typescript-codegen/issues"
+  },
+  "homepage": "https://github.com/foxel/openapi3-typescript-codegen#readme",
+  "dependencies": {
+    "@types/handlebars": "^4.0.36",
+    "case": "^1.5.4",
+    "handlebars": "^4.0.11",
+    "read-yaml": "^1.1.0"
+  }
+}

@@ -1,0 +1,10 @@
+{{#each components.schemas}}
+
+{{#if this.[$ref] ~}}
+  export type {{{schemaToInterface @key}}} = {{{schemaToInterface this.[$ref]}}};
+{{else}}
+  export interface {{{schemaToInterface @key}}} {
+
+  }
+{{/if}}
+{{/each}}

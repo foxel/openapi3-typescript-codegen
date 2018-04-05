@@ -3,16 +3,16 @@
         "target": "es6",
         "module": "commonjs",
         "outDir": "dist",
-        "sourceMap": true,
+        "sourceMap": false,
+        "declaration": true,
         "moduleResolution": "node",
         "typeRoots": [
-            "node_modules/@types",
-            "src/@types"
+            "node_modules/@types"
         ],
         "lib": ["es2017"]
     },
     "include": [
-        "src/**/*.ts"
+        "lib/**/*.ts"
     ],
     "exclude": [
         "node_modules"

@@ -1,4 +1,4 @@
-type StringMap<T> = {[key: string]: T};
+export type StringMap<T> = {[key: string]: T};
 
 export interface OpenAPI3 {
   openapi: string;

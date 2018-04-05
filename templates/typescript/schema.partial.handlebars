@@ -1,0 +1,32 @@
+{{~#if this.[$ref]~}}
+  {{{schemaToTypeName this.[$ref]}}}
+{{~else~}}
+{{~#if allOf~}}
+  {{#each allOf}}{{> schema}}{{#unless @last}} & {{/unless}}{{/each}}
+{{~/if~}}
+{{~#if oneOf~}}
+  {{#each oneOf}}{{> schema}}{{#unless @last}} | {{/unless}}{{/each}}
+{{/if~}}
+{{~#if anyOf~}}
+  {{#each anyOf}}{{> schema}}{{#unless @last}} | {{/unless}}{{/each}}
+{{~/if~}}
+{{~#if enum~}}
+  {{#each enum~}}
+    {{{value this ../type}}}{{#unless @last}} | {{/unless}}
+  {{~/each}}
+{{~else~}}
+{{#switch type}}
+{{#case "object"}}{
+{{#each properties}}
+  {{@key}}{{#unless (in? ../required @key)}}?{{/unless}}: {{> schema}};
+{{/each}}
+}{{/case}}
+{{~#case "array"}}Array<{{> schema items}}>{{/case~}}
+{{~#case "number"}}number{{/case~}}
+{{~#case "integer"}}number{{/case~}}
+{{~#case "string"}}string{{/case~}}
+{{~#case "boolean"}}boolean{{/case~}}
+{{~#case "null"}}null{{/case~}}
+{{~else}}{{> schema type='object'}}{{/switch}}
+{{~/if~}}
+{{~/if~}}

@@ -8,6 +8,7 @@ import { OpenAPI3 } from './schema';
 const files = [
   'schemas.ts',
   'angular/client.ts',
+  'angular/client.module.ts',
 ];
 
 export class Codegen {
@@ -19,7 +20,7 @@ export class Codegen {
   ) {
     this.engine.registerHelper('schemaRefToTypeName', (ref: string, _options) => {
       const [lastPart] = ref.split('/').reverse();
-      return Case.camel(lastPart);
+      return Case.pascal(lastPart);
     });
 
     this.engine.registerHelper('valueName', (value: string, _options) => {
@@ -50,7 +51,7 @@ export class Codegen {
     });
 
     this.engine.registerHelper('in?', (value1: string[], value2: string, _options) => {
-      return value1.includes(value2);
+      return Array.isArray(value1) && value1.indexOf(value2) >= 0;
     });
 
     this.engine.registerHelper('successResponses', (value: OpenAPI3.Responses, _options): OpenAPI3.Responses => {
@@ -76,7 +77,7 @@ export class Codegen {
     this.engine.registerHelper('case', function(...values) {
       const options = values.pop();
 
-      if (values.includes(this.__switch_value__)) {
+      if (values.indexOf(this.__switch_value__) >= 0) {
         this.__switch_triggered__ = true;
         return options.fn(this);
       }

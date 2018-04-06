@@ -61,7 +61,7 @@ export class {{className info.title}} {
     {{#switch in}}
       {{~#case "query"}}params = params.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
       {{~#case "header"}}headers = headers.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
-      {{~#case "path"}}path = path.replace('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
+      {{~#case "path"}}path = path.replace('{{concat "{" name "}"}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
     {{/switch}}
     {{/with}}{{/each}}
 

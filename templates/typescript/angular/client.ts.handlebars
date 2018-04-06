@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams, HttpUrlEncodingCodec } from '@angu
 import { Observable } from 'rxjs/Observable';
 
 import * as schemas from '../schemas';
+{{#if components.securitySchemes}}import { SecurityOptions } from '../schemas';{{/if}}
 
 export const BASE_PATH: InjectionToken<string> = new InjectionToken('BASE_PATH');
 
@@ -10,6 +11,7 @@ export const BASE_PATH: InjectionToken<string> = new InjectionToken('BASE_PATH')
 export class {{className info.title}} {
   private basePath: string = '';
   private defaultHeaders = new HttpHeaders();
+  readonly securityOptions: SecurityOptions = {};
 
   constructor(
     protected httpClient: HttpClient,
@@ -47,6 +49,7 @@ export class {{className info.title}} {
     {{valueName name}}{{#unless required}}?{{/unless}}: {{>schema (coalesce schema content.schema) namespace="schemas"}},
     {{/unless}}{{/with}}{{/each~}}
     {{#with (deref requestBody @root)}}body{{#unless required}}?{{/unless}}: {{#first content}}{{>schema schema namespace="schemas"}},{{/first}}{{/with}}
+    {{#each (coalesce security @root.security)}}{{#each .}}{{@key}}: SecurityOptions.{{schemaRefToTypeName @key}} = this.securityOptions.{{@key}},{{/each}}{{/each}}
   ): Observable<{{#each (successResponses responses)~}}
     {{#with (deref this @root)}}
       {{~#unless content}}void{{/unless}}
@@ -59,13 +62,30 @@ export class {{className info.title}} {
     let params = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
     let headers = this.defaultHeaders;
     {{#with (deref requestBody @root)}}{{#first content}}headers.set('Content-Type', '{{@key}}');{{/first}}{{/with}}
-    {{#each parameters}}{{#with (deref this @root)~}}
-    {{#switch in}}
+    {{#each parameters}}{{#with (deref this @root)}}
+    {{~#switch in}}
       {{~#case "query"}}params = params.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
       {{~#case "header"}}headers = headers.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
       {{~#case "path"}}path = path.replace('{{concat "{" name "}"}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
-    {{/switch}}
+    {{~/switch}}
     {{/with}}{{/each}}
+
+    {{#each (coalesce security @root.security)}}{{#each .}}
+    if ({{@key}}) {
+      {{#with (deref (concat "#/components/securitySchemes/" @key) @root)}}
+        {{#switch type}}
+          {{~#case "apiKey"}}{{#switch in}}
+            {{~#case "query"}}params = params.set('{{@key}}', this._encodeHttpParameter({{@key}}.key));{{/case}}
+            {{~#case "header"}}headers = headers.set('{{@key}}', this._encodeHttpParameter({{@key}}.key));{{/case}}
+          {{/switch}}{{/case}}
+          {{~#case "http"}}{{#switch scheme}}
+            {{~#case "bearer"}}headers = headers.set('Authorization', this._encodeHttpParameter('Bearer ' + {{@key}}.token));{{/case}}
+            {{~#case "basic"}}headers = headers.set('Authorization', this._encodeHttpParameter({{@key}}.login + ':' + {{@key}}.password));{{/case}}
+          {{/switch}}{{/case}}
+        {{/switch}}
+      {{/with}}
+    }
+    {{/each}}{{/each}}
 
     return this.httpClient.request<any>('{{method}}', `${this.basePath}${path}`, {
       {{#with requestBody}}body,{{/with~}}

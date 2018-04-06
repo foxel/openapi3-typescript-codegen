@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 
 import { {{className info.title}} } from './client';
+{{#if components.securitySchemes}}import { SecurityOptions } from '../schemas';{{/if}}
 
 @NgModule({
   imports:      [ CommonModule, HttpClientModule ],

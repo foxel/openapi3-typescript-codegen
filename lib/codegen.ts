@@ -63,14 +63,13 @@ export class Codegen {
     });
 
     this.engine.registerHelper('switch', function(value, options) {
-      this.__switch_value__ = value;
-      this.__switch_triggered__ = false;
-      let html = options.fn(this); // Process the body of the switch block
-      if (!this.__switch_triggered__) {
+      const context = {...this};
+      context.__switch_value__ = value;
+      context.__switch_triggered__ = false;
+      let html = options.fn(context); // Process the body of the switch block
+      if (!context.__switch_triggered__) {
         html = options.inverse(this);
       }
-      delete this.__switch_value__;
-      delete this.__switch_triggered__;
       return html;
     });
 
@@ -91,7 +90,7 @@ export class Codegen {
       } else if (value) {
         const key = Object.keys(value)[0];
         if (key) {
-          return options.fn(value[key], {data: {key, ...options.data}}); // @TODO: dunno how to do it right
+          return options.fn(value[key], {data: {...options.data, key}}); // @TODO: dunno how to do it right
         } else {
           return options.inverse(this);
         }
@@ -100,7 +99,7 @@ export class Codegen {
       }
     });
 
-    this.engine.registerHelper('coalesce', function(...values) {
+    this.engine.registerHelper('coalesce', function<T>(...values: T[]): T {
       const options = values.pop();
 
       return values.find(_ => !!_);
@@ -116,12 +115,16 @@ export class Codegen {
         return value;
       };
 
+      // here is the dirty one ))
       if (value && value.hasOwnProperty('$ref')) {
         const refString: string = value['$ref'];
         if (refString.match(/^#(\/\w+)+$/)) {
           const [_, ...ref] = refString.split('/');
           return recursor(ref, root);
         }
+      } else if (typeof value === 'string' && String(value).match(/^#(\/\w+)+$/)) {
+        const [_, ...ref] = String(value).split('/');
+        return recursor(ref, root);
       } else {
         return <T> value;
       }

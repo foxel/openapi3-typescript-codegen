@@ -251,7 +251,7 @@ export namespace OpenAPI3 {
   } | {
     type: "http";
     description?: string;
-    scheme: string;
+    scheme: 'basic' | 'bearer' | string;
     bearerFormat?: string;
   } | {
     type: "oauth2";

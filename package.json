@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "typescript codegen for OpenAPI 3",
   "main": "dist/codegen.js",
-  "types" : "dist/*.d.ts",
+  "types": "dist/*.d.ts",
   "scripts": {
     "build": "tsc",
     "tsc": "tsc",
@@ -24,6 +24,7 @@
     "@types/node": "^9.6.2",
     "case": "^1.5.4",
     "handlebars": "^4.0.11",
+    "mkdirp": "^0.5.1",
     "read-yaml": "^1.1.0"
   },
   "devDependencies": {

@@ -1,0 +1,91 @@
+import { Inject, Injectable, Optional, InjectionToken } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams, HttpUrlEncodingCodec } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
+
+import * as schemas from '../schemas';
+
+export const BASE_PATH: InjectionToken<string> = new InjectionToken('BASE_PATH');
+
+@Injectable()
+export class {{className info.title}} {
+  private basePath: string = '';
+  private defaultHeaders = new HttpHeaders();
+
+  constructor(
+    protected httpClient: HttpClient,
+    @Optional() @Inject(BASE_PATH) basePath: string,
+  ) {
+    if (basePath) {
+      this.basePath = basePath.replace(/\/+$/, '');
+    }
+  }
+
+  {{#each paths as |operations path|}}
+    {{~#with operations.get}}{{>operation method="GET" path=path name=(coalesce operationId (concat 'get' (className @path)))}}{{/with}}
+    {{~#with operations.post}}{{>operation method="POST" path=path name=(coalesce operationId (concat 'post' (className @path)))}}{{/with}}
+  {{~/each}}
+
+  // @TODO: different encoding styles
+  protected _encodeHttpParameter(value: any) {
+    if (Array.isArray(value)) {
+      return value.map(_ => this._encodeHttpParameter(_)).join(',');
+    } else if (value !== null && value !== undefined) {
+      return String(value);
+    } else {
+      return '';
+    }
+  }
+
+}
+
+{{#*inline "operation"}}
+  {{#if summary}}/** {{summary}} */{{/if}}
+  public {{name}}(
+    {{#with (deref requestBody @root)}}body{{#unless required}}?{{/unless}}: {{#first content}}{{>schema schema namespace="schemas"}},{{/first}}{{/with~}}
+    {{#each parameters}}{{#with (deref this @root)}}{{#unless (eq? in "cookie")~}}
+    {{valueName name}}{{#unless required}}?{{/unless}}: {{>schema (coalesce schema content.schema) namespace="schemas"}},
+    {{/unless}}{{/with}}{{/each}}
+  ): Observable<{{#each (successResponses responses)~}}
+    {{#with (deref this @root)~}}
+      {{#each content}}{{>schema schema namespace="schemas"}}{{~#unless @last}} | {{/unless}}{{/each}}
+    {{~/with}}
+    {{~#unless @last}} | {{/unless}}
+  {{~/each}}> {
+
+    let path = '{{path}}';
+    let params = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+    let headers = this.defaultHeaders;
+    {{#with (deref requestBody @root)}}{{#first content}}headers.set('Content-Type', '{{@key}}');{{/first}}{{/with}}
+    {{#each parameters}}{{#with (deref this @root)~}}
+    {{#switch in}}
+      {{~#case "query"}}params = params.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
+      {{~#case "header"}}headers = headers.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
+      {{~#case "path"}}path = path.replace('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
+    {{/switch}}
+    {{/with}}{{/each}}
+
+    return this.httpClient.request<any>('{{method}}', `${this.basePath}${path}`, {
+      {{#with requestBody}}body,{{/with~}}
+      params,
+      headers,
+      {{! withCredentials: this.configuration.withCredentials, }}
+    });
+  }
+
+{{/inline}}
+
+/**
+ * CustomHttpUrlEncodingCodec
+ * Fix plus sign (+) not encoding, so sent as blank space
+ * See: https://github.com/angular/angular/issues/11058#issuecomment-247367318
+ */
+export class CustomHttpUrlEncodingCodec extends HttpUrlEncodingCodec {
+    encodeKey(k: string): string {
+        k = super.encodeKey(k);
+        return k.replace(/\+/gi, '%2B');
+    }
+    encodeValue(v: string): string {
+        v = super.encodeValue(v);
+        return v.replace(/\+/gi, '%2B');
+    }
+}

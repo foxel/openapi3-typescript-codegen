@@ -1,5 +1,5 @@
 {{~#if this.[$ref]~}}
-  {{{schemaToTypeName this.[$ref]}}}
+  {{#with namespace}}{{this}}.{{/with}}{{schemaRefToTypeName this.[$ref]}}
 {{~else~}}
 {{~#if allOf~}}
   {{#each allOf}}{{> schema}}{{#unless @last}} & {{/unless}}{{/each}}
@@ -12,7 +12,7 @@
 {{~/if~}}
 {{~#if enum~}}
   {{#each enum~}}
-    {{{value this ../type}}}{{#unless @last}} | {{/unless}}
+    {{value this ../type}}{{#unless @last}} | {{/unless}}
   {{~/each}}
 {{~else~}}
 {{#switch type}}
@@ -21,7 +21,7 @@
   {{@key}}{{#unless (in? ../required @key)}}?{{/unless}}: {{> schema}};
 {{/each}}
 }{{/case}}
-{{~#case "array"}}Array<{{> schema items}}>{{/case~}}
+{{~#case "array"}}Array<{{> schema items namespace=namespace}}>{{/case~}}
 {{~#case "number"}}number{{/case~}}
 {{~#case "integer"}}number{{/case~}}
 {{~#case "string"}}string{{/case~}}

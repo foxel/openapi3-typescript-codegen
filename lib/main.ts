@@ -8,9 +8,12 @@ readYaml(path.join(__dirname, '../example/petstore.yaml'), (err, data) => {
     return;
   }
 
-  const generator = new Codegen(path.join(__dirname, '../templates'))
+  const generator = new Codegen(
+    path.join(__dirname, '../templates/typescript'),
+    path.join(__dirname, '../out'),
+  );
 
 
-  process.stdout.write(generator.generate(data));
+  generator.generate(data);
 });
 

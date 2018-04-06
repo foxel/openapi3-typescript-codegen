@@ -1,13 +1,16 @@
 {
   "name": "openapi3-typescript-codegen",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "typescript codegen for OpenAPI 3",
   "main": "dist/codegen.js",
+  "bin": {
+    "op3-codegen": "dist/main.js"
+  },
   "types": "dist/*.d.ts",
   "scripts": {
     "build": "tsc",
     "tsc": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node dist/main.js -- example/petstore.yaml"
   },
   "repository": {
     "type": "git",
@@ -20,14 +23,15 @@
   },
   "homepage": "https://github.com/foxel/openapi3-typescript-codegen#readme",
   "dependencies": {
-    "@types/handlebars": "^4.0.36",
-    "@types/node": "^9.6.2",
     "case": "^1.5.4",
+    "cli": "^1.0.1",
     "handlebars": "^4.0.11",
     "mkdirp": "^0.5.1",
     "read-yaml": "^1.1.0"
   },
   "devDependencies": {
+    "@types/cli": "^0.11.19",
+    "@types/handlebars": "^4.0.36",
     "@types/node": "^9.6.2",
     "typescript": "^2.8.1"
   }

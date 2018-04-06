@@ -46,8 +46,9 @@ export class {{className info.title}} {
     {{valueName name}}{{#unless required}}?{{/unless}}: {{>schema (coalesce schema content.schema) namespace="schemas"}},
     {{/unless}}{{/with}}{{/each}}
   ): Observable<{{#each (successResponses responses)~}}
-    {{#with (deref this @root)~}}
-      {{#each content}}{{>schema schema namespace="schemas"}}{{~#unless @last}} | {{/unless}}{{/each}}
+    {{#with (deref this @root)}}
+      {{~#unless content}}void{{/unless}}
+      {{~#each content}}{{>schema schema namespace="schemas"}}{{~#unless @last}} | {{/unless}}{{/each}}
     {{~/with}}
     {{~#unless @last}} | {{/unless}}
   {{~/each}}> {
@@ -80,12 +81,12 @@ export class {{className info.title}} {
  * See: https://github.com/angular/angular/issues/11058#issuecomment-247367318
  */
 export class CustomHttpUrlEncodingCodec extends HttpUrlEncodingCodec {
-    encodeKey(k: string): string {
-        k = super.encodeKey(k);
-        return k.replace(/\+/gi, '%2B');
-    }
-    encodeValue(v: string): string {
-        v = super.encodeValue(v);
-        return v.replace(/\+/gi, '%2B');
-    }
+  encodeKey(k: string): string {
+    k = super.encodeKey(k);
+    return k.replace(/\+/gi, '%2B');
+  }
+  encodeValue(v: string): string {
+    v = super.encodeValue(v);
+    return v.replace(/\+/gi, '%2B');
+  }
 }

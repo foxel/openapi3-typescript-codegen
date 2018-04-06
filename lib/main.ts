@@ -1,18 +1,29 @@
-import { Codegen } from './codegen';
-import * as path from 'path';
-import readYaml = require('read-yaml');
+#!/usr/bin/env node
 
-readYaml(path.join(__dirname, '../example/petstore.yaml'), (err, data) => {
+import { Codegen } from './codegen';
+import path = require('path');
+import readYaml = require('read-yaml');
+import cli = require('cli');
+
+const options = cli.parse({
+  templates: [ 't', 'Templates directory', 'dir', path.join(__dirname, '../templates/typescript')],
+  output: [ 'o', 'Output directory', 'dir', path.join('./out')],
+});
+
+if (cli.args.length < 1) {
+  throw new Error('No file specified');
+}
+
+readYaml(cli.args.shift(), (err, data) => {
   if (err) {
-    process.stdout.write(`error ${err}`);
+    process.stdout.write(`error reading file: ${err}`);
     return;
   }
 
   const generator = new Codegen(
-    path.join(__dirname, '../templates/typescript'),
-    path.join(__dirname, '../out'),
+    options.templates,
+    options.output,
   );
-
 
   generator.generate(data);
 });

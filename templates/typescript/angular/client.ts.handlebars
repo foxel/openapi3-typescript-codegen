@@ -23,6 +23,8 @@ export class {{className info.title}} {
   {{#each paths as |operations path|}}
     {{~#with operations.get}}{{>operation method="GET" path=path name=(coalesce operationId (concat 'get' (className @path)))}}{{/with}}
     {{~#with operations.post}}{{>operation method="POST" path=path name=(coalesce operationId (concat 'post' (className @path)))}}{{/with}}
+    {{~#with operations.put}}{{>operation method="PUT" path=path name=(coalesce operationId (concat 'put' (className @path)))}}{{/with}}
+    {{~#with operations.delete}}{{>operation method="DELETE" path=path name=(coalesce operationId (concat 'delete' (className @path)))}}{{/with}}
   {{~/each}}
 
   // @TODO: different encoding styles
@@ -41,10 +43,10 @@ export class {{className info.title}} {
 {{#*inline "operation"}}
   {{#if summary}}/** {{summary}} */{{/if}}
   public {{name}}(
-    {{#with (deref requestBody @root)}}body{{#unless required}}?{{/unless}}: {{#first content}}{{>schema schema namespace="schemas"}},{{/first}}{{/with~}}
     {{#each parameters}}{{#with (deref this @root)}}{{#unless (eq? in "cookie")~}}
     {{valueName name}}{{#unless required}}?{{/unless}}: {{>schema (coalesce schema content.schema) namespace="schemas"}},
-    {{/unless}}{{/with}}{{/each}}
+    {{/unless}}{{/with}}{{/each~}}
+    {{#with (deref requestBody @root)}}body{{#unless required}}?{{/unless}}: {{#first content}}{{>schema schema namespace="schemas"}},{{/first}}{{/with}}
   ): Observable<{{#each (successResponses responses)~}}
     {{#with (deref this @root)}}
       {{~#unless content}}void{{/unless}}

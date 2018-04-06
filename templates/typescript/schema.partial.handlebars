@@ -18,7 +18,7 @@
 {{#switch type}}
 {{#case "object"}}{
 {{#each properties}}
-  {{@key}}{{#unless (in? ../required @key)}}?{{/unless}}: {{> schema}};
+  {{@key}}{{#unless (in? ../required @key)}}?{{/unless}}: {{> schema namespace=../namespace}};
 {{/each}}
 }{{/case}}
 {{~#case "array"}}Array<{{> schema items namespace=namespace}}>{{/case~}}

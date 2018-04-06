@@ -90,7 +90,7 @@ export class Codegen {
       } else if (value) {
         const key = Object.keys(value)[0];
         if (key) {
-          return options.fn(value[key], {data: {key}});
+          return options.fn(value[key], {data: {key, ...options.data}}); // @TODO: dunno how to do it right
         } else {
           return options.inverse(this);
         }

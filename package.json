@@ -1,6 +1,6 @@
 {
   "name": "openapi3-typescript-codegen",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "typescript codegen for OpenAPI 3",
   "main": "dist/codegen.js",
   "bin": {
@@ -34,5 +34,9 @@
     "@types/handlebars": "^4.0.36",
     "@types/node": "^9.6.2",
     "typescript": "^2.8.1"
-  }
+  },
+  "files": [
+    "dist/",
+    "templates/"
+  ]
 }

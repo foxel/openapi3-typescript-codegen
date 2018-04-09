@@ -63,22 +63,25 @@ export class Codegen {
     });
 
     this.engine.registerHelper('switch', function(value, options) {
-      const context = {...this};
-      context.__switch_value__ = value;
-      context.__switch_triggered__ = false;
-      let html = options.fn(context); // Process the body of the switch block
-      if (!context.__switch_triggered__) {
-        html = options.inverse(this);
+      const data = {...options.data};
+      data.__switch_value__ = value;
+      data.__switch_triggered__ = false;
+      options.fn(this, {data}); // Process the body of the switch block
+      if (data.__switch_triggered__) {
+        return data.__case_value__;
+      } else {
+        return options.inverse(this);
       }
-      return html;
     });
 
     this.engine.registerHelper('case', function(...values) {
       const options = values.pop();
+      const data = options.data || {};
 
-      if (values.indexOf(this.__switch_value__) >= 0) {
-        this.__switch_triggered__ = true;
-        return options.fn(this);
+      if (values.indexOf(data.__switch_value__) >= 0) {
+        data.__switch_triggered__ = true;
+        data.__case_value__ = options.fn(this, {data: {...options.data}});
+        return '';
       }
     });
 

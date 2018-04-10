@@ -90,9 +90,8 @@ export class {{className info.title}} {
     {{/each}}
 
     {{#each (coalesce security @root.security)}}{{#first .}}
-    {{#with (deref (concat "#/components/securitySchemes/" @key) @root)}}
     if ({{@key}}) {
-      {{#switch type}}
+      {{#with (deref (concat "#/components/securitySchemes/" @key) @root)}}{{#switch type}}
         {{#case "apiKey"}}{{#switch in}}
           {{#case "query"}}params = params.set('{{@key}}', this._encodeHttpParameter({{@key}}.key));{{/case}}
           {{#case "header"}}headers = headers.set('{{@key}}', this._encodeHttpParameter({{@key}}.key));{{/case}}
@@ -101,9 +100,8 @@ export class {{className info.title}} {
           {{#case "bearer"}}headers = headers.set('Authorization', this._encodeHttpParameter('Bearer ' + {{@key}}.token));{{/case}}
           {{#case "basic"}}headers = headers.set('Authorization', this._encodeHttpParameter({{@key}}.login + ':' + {{@key}}.password));{{/case}}
         {{/switch}}{{/case}}
-      {{/switch}}
+      {{/switch}}{{/with}}
     }
-    {{/with}}
     {{/first}}{{/each}}
 
     return this.httpClient.request<any>('{{method}}', `${this.basePath}${path}`, {

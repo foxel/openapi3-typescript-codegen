@@ -26,6 +26,9 @@
 {{#each properties}}
   {{@key}}{{#unless (in? ../required @key)}}?{{/unless}}: {{> schema namespace=../namespace}};
 {{/each}}
+{{#with additionalProperties}}
+  [key: string]: {{> schema namespace=../namespace}};
+{{/with}}
 }{{/switch}}
 {{~/if~}}
 {{~/if~}}

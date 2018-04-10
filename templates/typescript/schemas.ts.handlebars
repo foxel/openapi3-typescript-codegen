@@ -19,14 +19,14 @@ export interface SecurityOptions {
 
 export namespace SecurityOptions {
   {{#each components.securitySchemes}}
-  export type {{schemaRefToTypeName @key}} = {{#with (deref . @root)}}{{#switch type}}
-      {{~#case "apiKey"}}{ key: string }{{/case}}
-      {{~#case "http"}}{{#switch scheme}}
-        {{~#case "bearer"}}{ token: string }{{/case}}
-        {{~#case "basic"}}{ login: string, password: string }{{/case}}
-      {{~else}}null /* {{type}} not supported */
-      {{~/switch}}{{/case}}
-    {{~/switch}};{{#with description}} // {{this}}{{/with}}{{/with}}
+  export interface {{schemaRefToTypeName @key}} {{#with (deref . @root)}}{{#switch type}}
+    {{~#case "apiKey"}}{ key: string }{{/case}}
+    {{~#case "http"}}{{#switch scheme}}
+      {{~#case "bearer"}}{ token: string }{{/case}}
+      {{~#case "basic"}}{ login: string, password: string }{{/case}}
+    {{~else}}{} /* {{type}} not supported */
+    {{~/switch}}{{/case}}
+  {{~/switch}}{{#with description}} // {{this}}{{/with}}{{/with}}
   {{/each}}
 }
 {{/if}}

@@ -16,17 +16,16 @@
   {{~/each}}
 {{~else~}}
 {{#switch type}}
-{{#case "object"}}{
+{{#case "array"}}Array<{{> schema items namespace=namespace}}>{{/case~}}
+{{#case "number"}}number{{/case~}}
+{{#case "integer"}}number{{/case~}}
+{{#case "string"}}string{{/case~}}
+{{#case "boolean"}}boolean{{/case~}}
+{{#case "null"}}null{{/case~}}
+{{else}}{
 {{#each properties}}
   {{@key}}{{#unless (in? ../required @key)}}?{{/unless}}: {{> schema namespace=../namespace}};
 {{/each}}
-}{{/case}}
-{{~#case "array"}}Array<{{> schema items namespace=namespace}}>{{/case~}}
-{{~#case "number"}}number{{/case~}}
-{{~#case "integer"}}number{{/case~}}
-{{~#case "string"}}string{{/case~}}
-{{~#case "boolean"}}boolean{{/case~}}
-{{~#case "null"}}null{{/case~}}
-{{~else}}{{> schema type='object'}}{{/switch}}
+}{{/switch}}
 {{~/if~}}
 {{~/if~}}

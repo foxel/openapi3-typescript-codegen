@@ -1,6 +1,13 @@
+{{!top level schemas}}
 {{#each components.schemas}}
-export type {{{schemaRefToTypeName @key}}} = {{> schema}};
-
+{{#if (and? @root.generateEnums (eq? type "string") enum)}}export enum {{{schemaRefToTypeName @key}}} {
+{{#each enum}}
+  {{.}} = {{value this "string"}},
+{{/each}}
+}
+{{else}}{{#if (or? (eq? type "object") (eq? type undefined))}}export interface {{{schemaRefToTypeName @key}}} {{> schema}}
+{{else}}export type {{{schemaRefToTypeName @key}}} = {{> schema}};
+{{/if}}{{/if}}
 {{/each}}
 
 {{#if components.securitySchemes}}

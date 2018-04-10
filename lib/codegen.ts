@@ -11,12 +11,17 @@ const files = [
   'angular/client.module.ts',
 ];
 
+export interface Options {
+  generateEnums?: boolean;
+}
+
 export class Codegen {
   private engine = Handlebars.create();
 
   constructor(
     private templatesPath: string,
     private outputPath: string,
+    private options: Options = {},
   ) {
     this.engine.registerHelper('schemaRefToTypeName', (ref: string, _options) => {
       const [lastPart] = ref.split('/').reverse();
@@ -44,6 +49,18 @@ export class Codegen {
         default:
           return String(value);
       }
+    });
+
+    this.engine.registerHelper('and?', (...values) => {
+      const options = values.pop();
+
+      return values.length && values.reduce((acc, value) => acc && value, true);
+    });
+
+    this.engine.registerHelper('or?', (...values) => {
+      const options = values.pop();
+
+      return values.reduce((acc, value) => acc || value, false);
     });
 
     this.engine.registerHelper('eq?', (value1: string, value2: string, _options) => {
@@ -153,9 +170,12 @@ export class Codegen {
           // fs.readFileSync(`${this.templatesPath}/typescript/interfaces.ts.handlebars`).toString(),
           buf.toString(),
           { noEscape: true },
-        )(data);
+        )({...data, ...this.options});
 
         return when<void>(cb => fs.writeFile(outPath, generated, cb))
+          .then(() => {
+            console.log(`${outPath} generated`);
+          });
       })
   }
 }

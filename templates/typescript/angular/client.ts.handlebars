@@ -83,8 +83,8 @@ export class {{className info.title}} {
     headers.set('Content-Type', '{{@key}}');{{/first}}{{/with}}
     {{#each parameters}}
     {{#with (deref this @root)}}{{#switch in}}
-      {{#case "query"}}params = params.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
-      {{#case "header"}}headers = headers.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
+      {{#case "query"}}{{#unless required}}if ({{valueName name}} !== undefined) {{/unless}}params = params.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
+      {{#case "header"}}{{#unless required}}if ({{valueName name}} !== undefined) {{/unless}}headers = headers.set('{{name}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
       {{#case "path"}}path = path.replace('{{concat "{" name "}"}}', this._encodeHttpParameter({{valueName name}}));{{/case}}
     {{/switch}}{{/with}}
     {{/each}}

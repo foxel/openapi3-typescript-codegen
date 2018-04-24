@@ -3,13 +3,13 @@
 {{~else~}}
 {{~#if allOf~}}
   {{#each allOf}}{{> schema}}{{#unless @last}} & {{/unless}}{{/each}}
-{{~/if~}}
+{{~else~}}
 {{~#if oneOf~}}
   {{#each oneOf}}{{> schema}}{{#unless @last}} | {{/unless}}{{/each}}
-{{/if~}}
+{{~else~}}
 {{~#if anyOf~}}
   {{#each anyOf}}{{> schema}}{{#unless @last}} | {{/unless}}{{/each}}
-{{~/if~}}
+{{~else~}}
 {{~#if enum~}}
   {{#each enum~}}
     {{value this ../type}}{{#unless @last}} | {{/unless}}
@@ -30,5 +30,8 @@
   [key: string]: {{> schema namespace=../namespace}};
 {{/with}}
 }{{/switch}}
+{{~/if~}}
+{{~/if~}}
+{{~/if~}}
 {{~/if~}}
 {{~/if~}}

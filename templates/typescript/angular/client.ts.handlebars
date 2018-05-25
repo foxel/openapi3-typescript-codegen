@@ -11,7 +11,7 @@ export const BASE_PATH: InjectionToken<string> = new InjectionToken('BASE_PATH')
 export class {{className info.title}} {
   private basePath: string = '';
   private defaultHeaders = new HttpHeaders();
-  readonly securityOptions: SecurityOptions = {};
+{{#if components.securitySchemes}}    readonly securityOptions: SecurityOptions = {};{{/if}}
 
   constructor(
     protected httpClient: HttpClient,

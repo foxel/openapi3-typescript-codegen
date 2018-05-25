@@ -5,12 +5,6 @@ import path = require('path');
 import mkdirp = require('mkdirp');
 import { OpenAPI3 } from './schema';
 
-const files = [
-  'schemas.ts',
-  'angular/client.ts',
-  'angular/client.module.ts',
-];
-
 export interface Options {
   generateEnums?: boolean;
 }
@@ -150,14 +144,21 @@ export class Codegen {
       }
     });
 
-    this.engine.registerPartial(
-      'schema',
-      fs.readFileSync(path.join(this.templatesPath, 'schema.partial.handlebars')).toString()
-    );
+    fs.readdirSync(this.templatesPath)
+      .filter(_ => !!_.match(/\.partial\.handlebars$/))
+      .map(fileName => {
+        const templateName = fileName.match(/(\w+)\.partial\.handlebars$/)[1];
+        this.engine.registerPartial(
+          templateName,
+          fs.readFileSync(path.join(this.templatesPath, fileName)).toString()
+        );
+      })
   }
 
   generate(data: OpenAPI3): Promise<void> {
-    return Promise.all(files.map(_ => this._generateFile(_, data))).then(_ => {});
+    return Promise.all(findTemplateFiles(this.templatesPath).map(_ => {
+      return this._generateFile(_, data);
+    })).then(_ => {});
   }
 
   private _generateFile(fileName: string, data: any): Promise<void> {
@@ -178,6 +179,22 @@ export class Codegen {
           });
       })
   }
+}
+
+function findTemplateFiles(dir): string[] {
+  const res = [];
+  fs.readdirSync(dir)
+    .filter(_ => !_.match(/\.partial\.handlebars$/))
+    .forEach(fileName => {
+      const fullPath = path.join(dir, fileName);
+      if (fs.statSync(fullPath).isDirectory()) {
+        res.push(... findTemplateFiles(fullPath).map(_ => path.join(fileName, _)));
+      } else if (fileName.match(/\.handlebars$/)) {
+        res.push(fileName.replace(/\.handlebars$/, ''));
+      }
+    });
+
+  return res;
 }
 
 function when<T>(unit: (cb: ((err: Error, res?: T) => void)) => void): Promise<T> {

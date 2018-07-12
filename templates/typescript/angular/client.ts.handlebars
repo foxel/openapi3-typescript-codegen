@@ -104,12 +104,38 @@ export class {{className info.title}} {
     }
     {{/first}}{{/each}}
 
+    {{#each responses}}
+      {{#if @first}}
+        {{#with (deref this)}}{{#first content}}{{#switch @key}}
+          {{#case "application/json"}}
+              {{assign 'responseType' 'json'}}
+          {{/case}}
+          {{#case "text/csv"}}
+              {{assign 'responseType' 'text'}}
+          {{/case}}
+          {{#default}}
+              {{assign 'responseType' 'json'}}
+          {{/default}}
+       {{/switch}}{{/first}}{{/with}}
+      {{/if}}
+    {{/each}}
+
+    {{#if_eq @root.responseType 'json'}}
     return this.httpClient.request<any>('{{method}}', `${this.basePath}${path}`, {
       {{#with (deref requestBody @root)}}body: this._encodeHttpBody(body, {{#first content}}'{{@key}}'{{/first}}),{{/with}}
+      responseType: 'json',
       params,
       headers,
-      {{! withCredentials: this.configuration.withCredentials, }}
     });
+    {{/if_eq}}
+    {{#if_eq @root.responseType 'text'}}
+        return this.httpClient.request('{{method}}', `${this.basePath}${path}`, {
+        {{#with (deref requestBody @root)}}body: this._encodeHttpBody(body, {{#first content}}'{{@key}}'{{/first}}),{{/with}}
+        responseType: 'text',
+        params,
+        headers,
+        });
+    {{/if_eq}}
   }
 
 {{/inline}}

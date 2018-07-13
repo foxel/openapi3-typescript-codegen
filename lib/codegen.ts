@@ -30,22 +30,6 @@ export class Codegen {
       return Case.pascal(value);
     });
 
-    this.engine.registerHelper('if_eq', function(a, b, opts) {
-      if (a == b) {
-        return opts.fn(this);
-      } else {
-        return opts.inverse(this);
-      }
-    });
-
-    this.engine.registerHelper('assign', function (varName, varValue, options) {
-      if (!options.data.root) {
-        options.data.root = {};
-      }
-      options.data.root[varName] = varValue;
-    });
-
-    // tslint:disable-next-line
     this.engine.registerHelper('concat', (...values) => {
       const options = values.pop();
 
@@ -79,6 +63,10 @@ export class Codegen {
 
     this.engine.registerHelper('in?', (value1: string[], value2: string, _options) => {
       return Array.isArray(value1) && value1.indexOf(value2) >= 0;
+    });
+
+    this.engine.registerHelper('contains?', (value1: string, value2: string, _options) => {
+      return value1.indexOf(value2) >= 0;
     });
 
     this.engine.registerHelper('successResponses', (value: OpenAPI3.Responses, _options): OpenAPI3.Responses => {

@@ -106,36 +106,28 @@ export class {{className info.title}} {
 
     {{#each responses}}
       {{#if @first}}
-        {{#with (deref this)}}{{#first content}}{{#switch @key}}
-          {{#case "application/json"}}
-              {{assign 'responseType' 'json'}}
-          {{/case}}
-          {{#case "text/csv"}}
-              {{assign 'responseType' 'text'}}
-          {{/case}}
-          {{#default}}
-              {{assign 'responseType' 'json'}}
-          {{/default}}
-       {{/switch}}{{/first}}{{/with}}
+        {{#with (deref this)}}
+          {{#first content}}
+            {{#if (eq? @key "application/json")}}
+              return this.httpClient.request<any>('{{../../method}}', `${this.basePath}${path}`, {
+                {{#with (deref ../../requestBody @root)}}body: this._encodeHttpBody(body, {{#first content}}'{{@key}}'{{/first}}),{{/with}}
+                  responseType: 'json',
+                  params,
+                  headers,
+                });
+            {{/if}}
+            {{#if (contains? @key "text")}}
+              return this.httpClient.request('{{../../method}}', `${this.basePath}${path}`, {
+                {{#with (deref ../../requestBody @root)}}body: this._encodeHttpBody(body, {{#first content}}'{{@key}}'{{/first}}),{{/with}}
+                responseType: 'text',
+                params,
+                headers,
+              });
+            {{/if}}
+          {{/first}}
+        {{/with}}
       {{/if}}
     {{/each}}
-
-    {{#if_eq @root.responseType 'json'}}
-    return this.httpClient.request<any>('{{method}}', `${this.basePath}${path}`, {
-      {{#with (deref requestBody @root)}}body: this._encodeHttpBody(body, {{#first content}}'{{@key}}'{{/first}}),{{/with}}
-      responseType: 'json',
-      params,
-      headers,
-    });
-    {{/if_eq}}
-    {{#if_eq @root.responseType 'text'}}
-        return this.httpClient.request('{{method}}', `${this.basePath}${path}`, {
-        {{#with (deref requestBody @root)}}body: this._encodeHttpBody(body, {{#first content}}'{{@key}}'{{/first}}),{{/with}}
-        responseType: 'text',
-        params,
-        headers,
-        });
-    {{/if_eq}}
   }
 
 {{/inline}}

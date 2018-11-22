@@ -2,13 +2,13 @@
   {{#with namespace}}{{this}}.{{/with}}{{schemaRefToTypeName this.[$ref]}}
 {{~else~}}
 {{~#if allOf~}}
-  {{#each allOf}}{{> schema}}{{#unless @last}} & {{/unless}}{{/each}}
+  {{#each allOf}}{{> schema namespace=../namespace}}{{#unless @last}} & {{/unless}}{{/each}}
 {{~else~}}
 {{~#if oneOf~}}
-  {{#each oneOf}}{{> schema}}{{#unless @last}} | {{/unless}}{{/each}}
+  {{#each oneOf}}{{> schema namespace=../namespace}}{{#unless @last}} | {{/unless}}{{/each}}
 {{~else~}}
 {{~#if anyOf~}}
-  {{#each anyOf}}{{> schema}}{{#unless @last}} | {{/unless}}{{/each}}
+  {{#each anyOf}}{{> schema namespace=../namespace}}{{#unless @last}} | {{/unless}}{{/each}}
 {{~else~}}
 {{~#if enum~}}
   {{#each enum~}}

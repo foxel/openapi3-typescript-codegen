@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpUrlEncodingCodec } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import * as schemas from '../schemas';
 {{#if components.securitySchemes}}import { SecurityOptions } from '../schemas';{{/if}}

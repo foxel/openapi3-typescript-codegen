@@ -205,7 +205,7 @@ export namespace OpenAPI3 {
     uniqueItems?: number;
     maxProperties?: number;
     minProperties?: number;
-    required?: boolean;
+    required?: string[];
     enum?: string[];
 
     type?: string; // - Value MUST be a string. Multiple types via an array are not supported.

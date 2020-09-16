@@ -104,12 +104,30 @@ export class {{className info.title}} {
     }
     {{/first}}{{/each}}
 
-    return this.httpClient.request<any>('{{method}}', `${this.basePath}${path}`, {
-      {{#with (deref requestBody @root)}}body: this._encodeHttpBody(body, {{#first content}}'{{@key}}'{{/first}}),{{/with}}
-      params,
-      headers,
-      {{! withCredentials: this.configuration.withCredentials, }}
-    });
+    {{#each responses}}
+      {{#if @first}}
+        {{#with (deref this)}}
+          {{#first content}}
+            {{#if (eq? @key "application/json")}}
+              return this.httpClient.request<any>('{{../../method}}', `${this.basePath}${path}`, {
+                {{#with (deref ../../requestBody @root)}}body: this._encodeHttpBody(body, {{#first content}}'{{@key}}'{{/first}}),{{/with}}
+                  responseType: 'json',
+                  params,
+                  headers,
+                });
+            {{/if}}
+            {{#if (contains? @key "text")}}
+              return this.httpClient.request('{{../../method}}', `${this.basePath}${path}`, {
+                {{#with (deref ../../requestBody @root)}}body: this._encodeHttpBody(body, {{#first content}}'{{@key}}'{{/first}}),{{/with}}
+                responseType: 'text',
+                params,
+                headers,
+              });
+            {{/if}}
+          {{/first}}
+        {{/with}}
+      {{/if}}
+    {{/each}}
   }
 
 {{/inline}}

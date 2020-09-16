@@ -30,7 +30,7 @@ export class Codegen {
       return Case.pascal(value);
     });
 
-    this.engine.registerHelper('concat', (...values: string[]) => {
+    this.engine.registerHelper('concat', (...values) => {
       const options = values.pop();
 
       return values.join('');
@@ -63,6 +63,10 @@ export class Codegen {
 
     this.engine.registerHelper('in?', (value1: string[], value2: string, _options) => {
       return Array.isArray(value1) && value1.indexOf(value2) >= 0;
+    });
+
+    this.engine.registerHelper('contains?', (value1: string, value2: string, _options) => {
+      return value1.indexOf(value2) >= 0;
     });
 
     this.engine.registerHelper('successResponses', (value: OpenAPI3.Responses, _options): OpenAPI3.Responses => {
